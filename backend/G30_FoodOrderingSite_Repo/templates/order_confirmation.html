@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Order Confirmation - Ziggy Eats{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card text-center">
+                <div class="card-body py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                    </div>
+                    <h2 class="card-title mb-3">Order Confirmed!</h2>
+                    <p class="card-text text-muted mb-4">Thank you for your order. We'll start preparing your food right away.</p>
+                    
+                    <div class="alert alert-info mb-4">
+                        <i class="fas fa-clock me-2"></i>
+                        Estimated delivery time: {{ order.estimated_delivery_time.strftime('%I:%M %p') }}
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title mb-4">Order Details</h5>
+                            <div class="row">
+                                <div class="col-md-6 text-md-start">
+                                    <p class="mb-2"><strong>Order Number:</strong></p>
+                                    <p class="mb-2"><strong>Total Amount:</strong></p>
+                                    <p class="mb-2"><strong>Delivery Address:</strong></p>
+                                    <p class="mb-0"><strong>Payment Method:</strong></p>
+                                </div>
+                                <div class="col-md-6 text-md-end">
+                                    <p class="mb-2">#{{ order.id }}</p>
+                                    <p class="mb-2">₹{{ "%.2f"|format(order.get_total_price()) }}</p>
+                                    <p class="mb-2">{{ order.address }}</p>
+                                    <p class="mb-0">{{ order.get_payment_method_display() }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title mb-4">Order Items</h5>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Item</th>
+                                            <th class="text-center">Quantity</th>
+                                            <th class="text-end">Price</th>
+                                            <th class="text-end">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in order.items %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}" 
+                                                         class="rounded me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                                    <div>
+                                                        <h6 class="mb-0">{{ item.product.name }}</h6>
+                                                        <small class="text-muted">{{ item.product.description }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">{{ item.quantity }}</td>
+                                            <td class="text-end">₹{{ "%.2f"|format(item.price) }}</td>
+                                            <td class="text-end">₹{{ "%.2f"|format(item.price * item.quantity) }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="{{ url_for('order_detail', order_id=order.id) }}" class="btn btn-primary">
+                            <i class="fas fa-eye me-1"></i> View Order Details
+                        </a>
+                        <a href="{{ url_for('menu') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-utensils me-1"></i> Continue Ordering
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,63 @@
+{% extends 'delivery/base.html' %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h2>Welcome, {{ rider.name }}</h2>
+        <span class="status-badge {% if rider.on_duty %}on-duty{% else %}off-duty{% endif %}">
+            {% if rider.on_duty %}On Duty{% else %}Off Duty{% endif %}
+        </span>
+        <form method="post" action="{% url 'toggle_duty_status' %}" class="duty-form">
+            {% csrf_token %}
+            <button type="submit" class="toggle-duty-btn">
+                {% if rider.on_duty %}Go Off Duty{% else %}Go On Duty{% endif %}
+            </button>
+        </form>
+    </div>
+
+    <div class="dashboard-cards">
+        <div class="card">
+            <h3>Total Deliveries</h3>
+            <p>{{ total_deliveries }}</p>
+        </div>
+        <div class="card">
+            <h3>Completed Orders</h3>
+            <p>{{ completed_orders }}</p>
+        </div>
+        <div class="card">
+            <h3>Total Earnings</h3>
+            <p>₹ {{ total_earnings }}</p>
+        </div>
+    </div>
+
+    <div class="recent-orders">
+        <h3>Recent Deliveries</h3>
+        {% if recent_orders %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Restaurant</th>
+                    <th>Customer</th>
+                    <th>Status</th>
+                    <th>Delivered At</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in recent_orders %}
+                <tr>
+                    <td>#{{ order.id }}</td>
+                    <td>{{ order.restaurant_name }}</td>
+                    <td>{{ order.customer_name }}</td>
+                    <td>{{ order.status }}</td>
+                    <td>{{ order.delivered_at|date:"d M, Y H:i" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No deliveries yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

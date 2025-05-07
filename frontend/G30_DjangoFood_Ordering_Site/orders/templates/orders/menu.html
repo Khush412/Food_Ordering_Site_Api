@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+
+{% block title %}Menu - Ziggy Eats{% endblock %}
+
+{% block extra_css %}
+<style>
+body {
+    background: #111;
+}
+.menu-container {
+    padding: 2rem 0;
+}
+.menu-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+.menu-header h1 {
+    color: #ffd700;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+}
+.menu-header p {
+    color: #fff;
+    font-size: 1.1rem;
+}
+.category-title {
+    color: #ffd700;
+    font-size: 2rem;
+    margin: 2rem 0 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #ffd700;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+}
+.menu-item {
+    background: #222;
+    border: 1px solid #ffd700;
+    border-radius: 12px;
+    transition: box-shadow 0.2s, transform 0.2s;
+    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.05);
+    height: 100%;
+}
+.menu-item:hover {
+    box-shadow: 0 6px 24px rgba(255, 215, 0, 0.15);
+    transform: translateY(-4px) scale(1.01);
+}
+.card-img-top {
+    height: 180px;
+    object-fit: cover;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    background: #333;
+}
+.card-title {
+    color: #ffd700;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+.card-text {
+    color: #fff;
+    min-height: 48px;
+    font-size: 1rem;
+}
+.price {
+    color: #ffd700;
+    font-weight: bold;
+    font-size: 1.3rem;
+}
+.veg-badge {
+    background: #ffd700;
+    color: #111;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+.non-veg-badge {
+    background: #111;
+    color: #ffd700;
+    border: 1px solid #ffd700;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+.add-to-cart-btn {
+    background: #ffd700;
+    color: #111;
+    border: none;
+    padding: 0.7rem 1.2rem;
+    font-weight: 700;
+    border-radius: 8px;
+    width: 100%;
+    margin-top: 1rem;
+    transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+.add-to-cart-btn:hover {
+    background: #fff200;
+    color: #111;
+    transform: translateY(-2px);
+}
+@media (max-width: 768px) {
+    .card-img-top {
+        height: 120px;
+    }
+    .category-title {
+        font-size: 1.3rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="menu-container">
+    <div class="menu-header">
+        <h1>Our Menu</h1>
+        <p>Discover our delicious offerings</p>
+    </div>
+    {% for category in categories %}
+    <h2 class="category-title">{{ category.1 }}</h2>
+    <div class="row menu-items-container">
+        {% for item in menu_items %}
+            {% if item.category == category.0 %}
+            <div class="col-md-4 mb-4 menu-item-wrapper">
+                <div class="card menu-item">
+                    {% if item.image_url %}
+                        <img src="{{ item.image_url }}" class="card-img-top" alt="{{ item.name }}">
+                    {% else %}
+                        <img src="https://via.placeholder.com/300x180" class="card-img-top" alt="No image available">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ item.name }}</h5>
+                        <p class="card-text">{{ item.description }}</p>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="price">₹{{ item.price }}</span>
+                            {% if item.is_veg %}
+                                <span class="veg-badge">Veg</span>
+                            {% else %}
+                                <span class="non-veg-badge">Non-Veg</span>
+                            {% endif %}
+                        </div>
+                        <button class="btn add-to-cart-btn" onclick="addToCart({{ item.id }})">
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function addToCart(itemId) {
+    fetch('/orders/add-to-cart/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: `item_id=${itemId}&quantity=1`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Added to cart!');
+            // Optionally update cart count in navbar
+        } else {
+            alert(data.error || 'Error adding to cart');
+        }
+    })
+    .catch(error => {
+        alert('Error adding to cart');
+    });
+}
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %} 

@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout - Ziggy Eats{% endblock %}
+
+{% block extra_css %}
+<style>
+    .checkout-container {
+        padding: 2rem 0;
+    }
+    .form-label {
+        font-weight: 500;
+    }
+    .form-control:focus {
+        border-color: #dc3545;
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+    }
+    .order-summary {
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        padding: 1.5rem;
+        position: sticky;
+        top: 100px;
+    }
+    .order-item {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #eee;
+    }
+    .order-item:last-child {
+        border-bottom: none;
+    }
+    .order-item-image {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-right: 1rem;
+    }
+    .order-item-details {
+        flex-grow: 1;
+    }
+    .order-item-price {
+        color: #dc3545;
+        font-weight: 600;
+    }
+    .payment-method {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .payment-method:hover {
+        border-color: #dc3545;
+    }
+    .payment-method.selected {
+        border-color: #dc3545;
+        background-color: #fff5f5;
+    }
+    .payment-method input[type="radio"] {
+        display: none;
+    }
+    .payment-method i {
+        font-size: 1.5rem;
+        margin-right: 0.5rem;
+    }
+    .place-order-btn {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+    .delivery-time {
+        background-color: #fff3cd;
+        border: 1px solid #ffeeba;
+        color: #856404;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+    }
+    .delivery-time i {
+        margin-right: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">Checkout</h1>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">Delivery Information</h4>
+                <form id="checkoutForm" action="{{ url_for('place_order') }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="fullName" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="fullName" name="full_name" 
+                               value="{{ current_user.username if current_user.is_authenticated else '' }}" required>
+                    </div>
+                            <div class="col-md-6">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" 
+                               value="{{ current_user.email if current_user.is_authenticated else '' }}" required>
+                    </div>
+                            <div class="col-md-6">
+                        <label for="phone" class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" required>
+                    </div>
+                            <div class="col-12">
+                        <label for="address" class="form-label">Delivery Address</label>
+                        <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+                            </div>
+                    </div>
+                    
+                        <h4 class="card-title mt-4 mb-3">Payment Method</h4>
+                        <div class="payment-methods">
+                            {% for method_code, method_name in payment_methods %}
+                            <label class="payment-method d-flex align-items-center">
+                                <input type="radio" name="payment_method" value="{{ method_code }}" required>
+                                <div class="d-flex align-items-center">
+                                    {% if method_code == 'cod' %}
+                                        <i class="fas fa-money-bill-wave text-success"></i>
+                                    {% elif method_code == 'card' %}
+                                        <i class="fas fa-credit-card text-primary"></i>
+                                    {% elif method_code == 'upi' %}
+                                        <i class="fas fa-mobile-alt text-info"></i>
+                                    {% endif %}
+                                    <span>{{ method_name }}</span>
+                                </div>
+                            </label>
+                            {% endfor %}
+                    </div>
+                    
+                        <div class="delivery-time">
+                            <i class="fas fa-clock"></i>
+                            Estimated delivery time: {{ estimated_delivery_time }}
+                    </div>
+                    
+                        <button type="submit" class="btn btn-danger place-order-btn">
+                            <i class="fas fa-lock me-2"></i>Place Order
+                        </button>
+                    </form>
+                    </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="order-summary">
+                <h4 class="mb-4">Order Summary</h4>
+                
+                <div class="order-items mb-4">
+                    {% for item in cart_items %}
+                    <div class="order-item">
+                        <img src="{{ item.menu_item.image_url }}" alt="{{ item.menu_item.name }}" class="order-item-image">
+                        <div class="order-item-details">
+                            <h6 class="mb-1">{{ item.menu_item.name }}</h6>
+                            <p class="text-muted mb-0">Quantity: {{ item.quantity }}</p>
+                        </div>
+                        <div class="order-item-price">
+                            ₹{{ "%.2f"|format(item.menu_item.price * item.quantity) }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="order-totals">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal</span>
+                        <span>₹{{ "%.2f"|format(subtotal) }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Delivery Fee</span>
+                    <span>₹{{ "%.2f"|format(delivery_fee) }}</span>
+                </div>
+                <hr>
+                    <div class="d-flex justify-content-between mb-0">
+                        <strong>Total</strong>
+                        <strong class="text-danger">₹{{ "%.2f"|format(total_price) }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Format phone number as user types
+    const phoneInput = document.getElementById('phone');
+    phoneInput.addEventListener('input', function(e) {
+        let x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+        e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+    });
+
+    // Handle payment method selection
+    const paymentMethods = document.querySelectorAll('.payment-method');
+    paymentMethods.forEach(method => {
+        method.addEventListener('click', function() {
+            paymentMethods.forEach(m => m.classList.remove('selected'));
+            this.classList.add('selected');
+            this.querySelector('input[type="radio"]').checked = true;
+        });
+    });
+
+    // Form validation
+    const form = document.getElementById('checkoutForm');
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Basic validation
+        const fullName = document.getElementById('fullName').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const address = document.getElementById('address').value.trim();
+        const paymentMethod = document.querySelector('input[name="payment_method"]:checked');
+        
+        if (!fullName || !email || !phone || !address || !paymentMethod) {
+            const toast = new bootstrap.Toast(document.getElementById('alertToast'));
+            document.getElementById('toastTitle').innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>Error';
+            document.getElementById('toastMessage').textContent = 'Please fill in all required fields';
+            toast.show();
+            return;
+        }
+        
+        // Email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            const toast = new bootstrap.Toast(document.getElementById('alertToast'));
+            document.getElementById('toastTitle').innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>Error';
+            document.getElementById('toastMessage').textContent = 'Please enter a valid email address';
+            toast.show();
+            return;
+        }
+        
+        // Phone validation (basic)
+        const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/;
+        if (!phoneRegex.test(phone)) {
+            const toast = new bootstrap.Toast(document.getElementById('alertToast'));
+            document.getElementById('toastTitle').innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>Error';
+            document.getElementById('toastMessage').textContent = 'Please enter a valid phone number';
+            toast.show();
+            return;
+        }
+        
+        // Show loading state
+        const submitButton = form.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+
+        // If all validation passes, submit the form
+        this.submit();
+    });
+});
+</script>
+{% endblock %} 

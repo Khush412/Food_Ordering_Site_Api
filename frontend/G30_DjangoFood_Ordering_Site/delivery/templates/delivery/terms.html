@@ -1,0 +1,41 @@
+{% extends 'delivery/base.html' %}
+{% block content %}
+<div style="background-color: #000; color: #f5c518; padding: 60px 30px; font-family: 'Poppins', sans-serif; min-height: 80vh;">
+    <div style="max-width: 1000px; margin: 0 auto; background-color: #111; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.6);">
+        <h1 style="font-size: 36px; margin-bottom: 20px; border-bottom: 2px solid #f5c518; padding-bottom: 10px;">Terms of Service</h1>
+        
+        <p style="font-size: 16px; line-height: 1.7; color: #ddd;">
+            Welcome to Ziggy Eats! These Terms of Service govern your access to and use of our food delivery platform. By using our services, you agree to be bound by these terms.
+        </p>
+
+        <h2 style="margin-top: 30px; color: #f5c518;">1. User Responsibilities</h2>
+        <p style="font-size: 16px; line-height: 1.7; color: #ddd;">
+            You are responsible for maintaining the confidentiality of your account login credentials and for all activities that occur under your account. You must provide accurate and current information when registering or placing orders.
+        </p>
+
+        <h2 style="margin-top: 30px; color: #f5c518;">2. Ordering and Payments</h2>
+        <p style="font-size: 16px; line-height: 1.7; color: #ddd;">
+            All orders placed through Ziggy Eats are subject to availability and restaurant confirmation. Prices are displayed clearly before checkout and include applicable taxes and delivery charges. Payments must be made using the provided secure gateways.
+        </p>
+
+        <h2 style="margin-top: 30px; color: #f5c518;">3. Cancellations and Refunds</h2>
+        <p style="font-size: 16px; line-height: 1.7; color: #ddd;">
+            Orders can be canceled within a limited time after placing them. Refunds, if applicable, will be processed based on the restaurant and delivery status. Please contact our support team for assistance.
+        </p>
+
+        <h2 style="margin-top: 30px; color: #f5c518;">4. Prohibited Activities</h2>
+        <p style="font-size: 16px; line-height: 1.7; color: #ddd;">
+            You agree not to misuse our platform, interfere with other users' experience, or engage in any fraudulent or illegal activities. Ziggy Eats reserves the right to suspend or terminate accounts found in violation.
+        </p>
+
+        <h2 style="margin-top: 30px; color: #f5c518;">5. Changes to the Terms</h2>
+        <p style="font-size: 16px; line-height: 1.7; color: #ddd;">
+            We may update these Terms of Service from time to time. Continued use of Ziggy Eats after any modifications constitutes acceptance of the updated terms.
+        </p>
+
+        <p style="margin-top: 40px; font-size: 15px; color: #bbb;">
+            For any questions or concerns about these terms, please reach out to our <a href="{% url 'contact' %}" style="color: #f5c518; text-decoration: underline;">contact team</a>.
+        </p>
+    </div>
+</div>
+{% endblock %}

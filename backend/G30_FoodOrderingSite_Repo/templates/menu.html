@@ -1,0 +1,304 @@
+{% extends "base.html" %}
+
+{% block title %}Menu - Ziggy Eats{% endblock %}
+
+{% block extra_css %}
+<style>
+    .menu-container {
+        padding: 2rem 0;
+    }
+    .menu-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    .menu-header h1 {
+        color: #333;
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+    .menu-header p {
+        color: #666;
+        font-size: 1.1rem;
+    }
+    .search-filter-container {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .category-title {
+        color: #333;
+        font-size: 1.8rem;
+        margin: 2rem 0 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e74c3c;
+    }
+    .menu-item {
+        transition: all 0.3s ease;
+        height: 100%;
+        border: none;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .menu-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    .card-img-top {
+        height: 200px;
+        object-fit: cover;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+    }
+    .card-body {
+        padding: 1.5rem;
+    }
+    .card-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 0.8rem;
+        color: #333;
+    }
+    .card-text {
+        color: #666;
+        margin-bottom: 1rem;
+        min-height: 48px;
+    }
+    .price {
+        color: #e74c3c;
+        font-weight: bold;
+        font-size: 1.4rem;
+    }
+    .veg-badge {
+        background-color: #28a745;
+        color: white;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+    }
+    .non-veg-badge {
+        background-color: #dc3545;
+        color: white;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+    }
+    .add-to-cart-btn {
+        background-color: #e74c3c;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        width: 100%;
+        margin-top: 1rem;
+    }
+    .add-to-cart-btn:hover {
+        background-color: #c0392b;
+        transform: translateY(-2px);
+    }
+    .filter-btn {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        padding: 0.5rem 1rem;
+        margin: 0 0.3rem;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+    }
+    .filter-btn:hover, .filter-btn.active {
+        background-color: #e74c3c;
+        color: white;
+        border-color: #e74c3c;
+    }
+    .search-input {
+        border: 1px solid #ddd;
+        padding: 0.8rem 1.2rem;
+        border-radius: 25px;
+        width: 100%;
+        transition: all 0.3s ease;
+    }
+    .search-input:focus {
+        border-color: #e74c3c;
+        box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
+    }
+    .alert {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        min-width: 300px;
+        animation: slideIn 0.5s ease-out;
+    }
+    @keyframes slideIn {
+        from { transform: translateX(100%); }
+        to { transform: translateX(0); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 mb-3">Our Menu</h1>
+        <p class="lead text-muted">Discover our delicious offerings</p>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" class="form-control" id="searchInput" placeholder="Search for dishes...">
+                    </div>
+            </div>
+            <div class="col-md-6 text-md-end">
+                    <div class="btn-group">
+                        <button class="btn btn-outline-danger active" data-filter="all">All</button>
+                        <button class="btn btn-outline-danger" data-filter="veg">Veg</button>
+                        <button class="btn btn-outline-danger" data-filter="non-veg">Non-Veg</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% for value, label in categories %}
+    <div class="mb-5">
+        <h2 class="h3 mb-4 pb-2 border-bottom border-danger">{{ label }}</h2>
+        <div class="row g-4 menu-items-container">
+        {% for item in menu_items %}
+                {% if item.category == value %}
+                <div class="col-md-6 col-lg-4 menu-item-wrapper" 
+                 data-category="{{ item.category }}"
+                 data-is-veg="{{ item.is_veg|lower }}"
+                 data-name="{{ item.name|lower }}"
+                 data-description="{{ item.description|lower }}">
+                    <div class="card h-100 menu-item">
+                    <img src="{{ item.image_url }}" class="card-img-top" alt="{{ item.name }}">
+                    <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title mb-0">{{ item.name }}</h5>
+                            {% if item.is_veg %}
+                                    <span class="badge bg-success">Veg</span>
+                            {% else %}
+                                    <span class="badge bg-danger">Non-Veg</span>
+                            {% endif %}
+                        </div>
+                            <p class="card-text text-muted mb-3">{{ item.description }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="h5 mb-0 text-danger">₹{{ "%.2f"|format(item.price) }}</span>
+                                <button class="btn btn-danger add-to-cart-btn" data-item-id="{{ item.id }}">
+                                    <i class="fas fa-shopping-cart me-1"></i> Add to Cart
+                        </button>
+                            </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="alertToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong class="me-auto" id="toastTitle">Notification</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toastMessage"></div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+    const searchInput = document.getElementById('searchInput');
+    const filterButtons = document.querySelectorAll('[data-filter]');
+    const menuItems = document.querySelectorAll('.menu-item-wrapper');
+    
+    // Add to cart functionality
+    addToCartButtons.forEach(button => {
+        button.addEventListener('click', async function() {
+            const itemId = this.dataset.itemId;
+            const originalText = this.innerHTML;
+            
+            try {
+                this.disabled = true;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Adding...';
+                
+                const response = await fetch('/add_to_cart', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ item_id: itemId })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Update cart count
+                    const cartCount = document.getElementById('cartCount');
+                    if (cartCount) {
+                        cartCount.textContent = data.total_items;
+                    }
+                    
+                    // Show success message
+                    const toast = new bootstrap.Toast(document.getElementById('alertToast'));
+                    document.getElementById('toastTitle').innerHTML = '<i class="fas fa-check-circle me-2"></i>Success';
+                    document.getElementById('toastMessage').textContent = 'Item added to cart!';
+                    toast.show();
+                } else {
+                    throw new Error(data.error || 'Failed to add item to cart');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                const toast = new bootstrap.Toast(document.getElementById('alertToast'));
+                document.getElementById('toastTitle').innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>Error';
+                document.getElementById('toastMessage').textContent = error.message;
+                toast.show();
+            } finally {
+                this.disabled = false;
+                this.innerHTML = originalText;
+            }
+        });
+    });
+
+    // Search and filter functionality
+    function filterItems() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const activeFilter = document.querySelector('[data-filter].active').dataset.filter;
+
+        menuItems.forEach(item => {
+            const name = item.dataset.name;
+            const description = item.dataset.description;
+            const isVeg = item.dataset.isVeg === 'true';
+            
+            const matchesSearch = name.includes(searchTerm) || description.includes(searchTerm);
+            const matchesFilter = activeFilter === 'all' || 
+                                (activeFilter === 'veg' && isVeg) || 
+                                (activeFilter === 'non-veg' && !isVeg);
+
+            item.style.display = matchesSearch && matchesFilter ? 'block' : 'none';
+        });
+    }
+
+    // Event listeners for search and filter
+    searchInput.addEventListener('input', filterItems);
+
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            filterItems();
+        });
+    });
+});
+</script>
+{% endblock %}

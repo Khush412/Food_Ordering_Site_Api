@@ -1,0 +1,14 @@
+{% extends 'delivery/base.html' %}
+{% load static %}
+{% block content %}
+<div class="approval-container">
+    <div class="approval-card">
+        <img src="{% static 'delivery/img/image.png' %}" alt="Waiting Icon" class="approval-icon">
+        <h2>Registration Submitted!</h2>
+        <p class="message">Thank you for registering as a delivery rider with Ziggy Eats.</p>
+        <p class="highlight">Your details are under review.</p>
+        <p>You will receive a confirmation once your account is approved by our admin team.</p>
+        <p class="footer-note">This usually takes 24-48 hours. Please be patient.</p>
+    </div>
+</div>
+{% endblock %}

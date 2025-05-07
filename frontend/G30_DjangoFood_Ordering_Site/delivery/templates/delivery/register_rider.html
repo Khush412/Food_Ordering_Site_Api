@@ -1,0 +1,139 @@
+{% extends 'delivery/base.html' %}
+{% block content %}
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #000;
+    }
+
+    .register-container {
+        max-width: 420px;
+        margin: 60px auto;
+        padding: 35px 30px;
+        background: #333;
+        backdrop-filter: blur(6px);
+        border: 1px solid yellow;
+        border-radius: 18px;
+        box-shadow: 0 8px 25px rgba(255, 215, 0, 0.12);
+        color: #f8f8f8;
+        animation: fadeInUp 0.5s ease-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .register-container h2 {
+        text-align: center;
+        color: #FFD700;
+        font-size: 26px;
+        margin-bottom: 25px;
+    }
+
+    .register-form {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .form-field {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-field label {
+        font-size: 14px;
+        font-weight: 500;
+        color: #eeeeee;
+        margin-bottom: 6px;
+    }
+
+    .form-field input[type="text"],
+    .form-field input[type="email"],
+    .form-field input[type="password"],
+    .form-field input[type="file"] {
+        padding: 11px 12px;
+        font-size: 14px;
+        background: #fdfdfd0a;
+        border: 1.5px solid #FFD700;
+        border-radius: 10px;
+        color: #ffffff;
+        transition: 0.3s ease;
+    }
+
+    .form-field input:focus {
+        outline: none;
+        border-color: #ffe600;
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    }
+
+    .form-field input::file-selector-button {
+        background: #FFD700;
+        color: #000;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 6px;
+        margin-right: 10px;
+        cursor: pointer;
+    }
+
+    .form-field input::file-selector-button:hover {
+        background: #ffe600;
+    }
+
+    .submit-btn {
+        background: linear-gradient(90deg, #FFD700, #ffcc00);
+        color: #000;
+        font-weight: 600;
+        padding: 12px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        text-transform: uppercase;
+        font-size: 15px;
+        transition: 0.3s ease;
+        box-shadow: 0 4px 10px rgba(255, 215, 0, 0.25);
+    }
+
+    .submit-btn:hover {
+        background: linear-gradient(90deg, #ffcc00, #FFD700);
+    }
+</style>
+
+<div class="register-container">
+    <h2>Register as a Rider</h2>
+    <form method="POST" enctype="multipart/form-data" class="register-form">
+        {% csrf_token %}
+        <div class="form-field">
+            <label for="id_name">Full Name</label>
+            {{ form.name }}
+        </div>
+        <div class="form-field">
+            <label for="id_email">Email</label>
+            {{ form.email }}
+        </div>
+        <div class="form-field">
+            <label for="id_password">Password</label>
+            {{ form.password }}
+        </div>
+        <div class="form-field">
+            <label for="id_aadhaar_card">Aadhaar Card</label>
+            {{ form.aadhaar_card }}
+        </div>
+        <div class="form-field">
+            <label for="id_driving_license">Driving License</label>
+            {{ form.driving_license }}
+        </div>
+        <button type="submit" class="submit-btn">Register</button>
+    </form>
+</div>
+{% endblock %}

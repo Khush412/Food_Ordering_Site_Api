@@ -1,0 +1,120 @@
+{% extends 'orders/base.html' %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-overlay">
+        <div class="hero-content">
+            <h1 class="logo-text">ZIGGY EATS</h1>
+            <p class="quote">Delight in a click</p>
+            <a href="{% url 'ziggy_cafe_menu' %}" class="order-btn"><i class="fas fa-utensils"></i> Order Now</a>
+        </div>
+    </div>
+</section>
+
+<!-- Top Restaurants -->
+<section class="restaurants">
+    <h2>🔥 Top Restaurants</h2>
+    <div class="restaurant-list">
+        {% for restaurant in restaurants %}
+            <div class="restaurant-card">
+                <div class="restaurant-img-wrapper">
+                    <img src="{{ restaurant.image_url }}" alt="{{ restaurant.name }}">
+                </div>
+                <div class="restaurant-info">
+                    <h3>{{ restaurant.name }}</h3>
+                </div>
+            </div>
+        {% empty %}
+            <p>No restaurants available at the moment.</p>
+        {% endfor %}
+    </div>
+
+    <div class="cta-buttons">
+        <a href="{% url 'ziggy_cafe_menu' %}" class="view-more-btn">View More Restaurants</a>
+    </div>
+</section>
+
+<!-- Membership Section -->
+<section class="membership">
+    <h2>Become a Member</h2>
+    <div class="membership-cards">
+        <!-- Membership Table -->
+        <div class="membership-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Features</th>
+                        <th>Ziggy Member (₹0)</th>
+                        <th>Ziggy Luxe (₹200/month)</th>
+                        <th>Ziggy Royale (₹500/month)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Free deliveries (₹200+ orders)</td>
+                        <td><i class="fas fa-times"></i></td>
+                        <td><i class="fas fa-check"></i></td>
+                        <td><i class="fas fa-check"></i></td>
+                    </tr>
+                    <tr>
+                        <td>Exclusive discounts on select restaurants</td>
+                        <td><i class="fas fa-times"></i></td>
+                        <td><i class="fas fa-check"></i></td>
+                        <td><i class="fas fa-check"></i></td>
+                    </tr>
+                    <tr>
+                        <td>Ziggy coins on every order</td>
+                        <td><i class="fas fa-times"></i></td>
+                        <td><i class="fas fa-check"></i></td>
+                        <td><i class="fas fa-check"></i></td>
+                    </tr>
+                    <tr>
+                        <td>Fast deliveries</td>
+                        <td><i class="fas fa-times"></i></td>
+                        <td><i class="fas fa-check"></i></td>
+                        <td><i class="fas fa-check"></i></td>
+                    </tr>
+                    <tr>
+                        <td>Complimentary items on orders</td>
+                        <td><i class="fas fa-times"></i></td>
+                        <td><i class="fas fa-times"></i></td>
+                        <td><i class="fas fa-check"></i></td>
+                    </tr>
+                    <tr>
+                        <td>Skip the queue</td>
+                        <td><i class="fas fa-times"></i></td>
+                        <td><i class="fas fa-times"></i></td>
+                        <td><i class="fas fa-check"></i></td>
+                    </tr>
+                    <tr>
+                        <td>2x Ziggy coins</td>
+                        <td><i class="fas fa-times"></i></td>
+                        <td><i class="fas fa-times"></i></td>
+                        <td><i class="fas fa-check"></i></td>
+                    </tr>
+                    <tr>
+                        <td>Priority customer support</td>
+                        <td><i class="fas fa-times"></i></td>
+                        <td><i class="fas fa-check"></i></td>
+                        <td><i class="fas fa-check"></i></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Membership Purchase Buttons -->
+            <div class="membership-buttons">
+               
+                <div class="membership-card luxe">
+                    <p class="price">₹200/month <br>₹2000/year</p>
+                    <button class="purchase-btn">Purchase Ziggy Luxe</button>
+                </div>
+                <div class="membership-card royale">
+                    <p class="price">₹500/month  <br>₹5000/year</p>
+                    <button class="purchase-btn">Purchase Ziggy Royale</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

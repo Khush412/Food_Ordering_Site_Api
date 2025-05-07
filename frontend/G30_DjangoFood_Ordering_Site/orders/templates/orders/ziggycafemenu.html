@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block title %}Ziggy Café Menu - Ziggy Eats{% endblock %}
+
+{% block content %}
+<div style="padding: 2rem 0; background: #111; min-height: 100vh; font-family: 'Montserrat', sans-serif;">
+    <div style="text-align: center; margin-bottom: 3rem; padding: 2rem 1rem; background: linear-gradient(to bottom, #1a1a1a, #111);">
+        <h1 style="color: #ffd700; font-size: 3rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">Ziggy Café Menu</h1>
+        <p style="color: #fff; font-size: 1.2rem; opacity: 0.9;">Discover our delicious offerings</p>
+    </div>
+
+    <div style="max-width: 1400px; margin: 0 auto; padding: 0 1rem;">
+        {% for category, items in categorized_menu.items %}
+            <div style="margin-bottom: 3rem;">
+                <h2 style="color: #ffd700; font-size: 2.2rem; margin: 2rem 0 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid #ffd700; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">{{ category }}</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem;">
+                    {% for item in items %}
+                        <div style="background: #222; border: 1px solid #ffd700; border-radius: 16px; overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                            <div style="position: relative; overflow: hidden;">
+                                <img src="{{ item.image_url|default:'https://via.placeholder.com/300x180' }}" 
+                                     alt="{{ item.name }}" 
+                                     style="width: 100%; height: 200px; object-fit: cover; transition: transform 0.3s ease;">
+                                {% if item.is_veg %}
+                                    <span style="position: absolute; top: 1rem; right: 1rem; background: #ffd700; color: #111; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">Veg</span>
+                                {% else %}
+                                    <span style="position: absolute; top: 1rem; right: 1rem; background: #111; color: #ffd700; border: 1px solid #ffd700; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">Non-Veg</span>
+                                {% endif %}
+                            </div>
+                            <div style="padding: 1.5rem;">
+                                <h5 style="color: #ffd700; font-size: 1.4rem; font-weight: 700; margin-bottom: 0.8rem;">{{ item.name }}</h5>
+                                <p style="color: #fff; font-size: 1rem; line-height: 1.6; margin-bottom: 1.2rem; min-height: 48px;">{{ item.description }}</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
+                                    <span style="color: #ffd700; font-weight: bold; font-size: 1.5rem;">₹{{ item.price }}</span>
+                                    <div class="quantity-controls" style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <button onclick="updateQuantity('{{ item.id }}', -1)" style="background: #333; color: #ffd700; border: 1px solid #ffd700; width: 30px; height: 30px; border-radius: 50%; cursor: pointer;">-</button>
+                                        <span id="quantity-{{ item.id }}" style="color: #fff; min-width: 30px; text-align: center;">0</span>
+                                        <button onclick="updateQuantity('{{ item.id }}', 1)" style="background: #333; color: #ffd700; border: 1px solid #ffd700; width: 30px; height: 30px; border-radius: 50%; cursor: pointer;">+</button>
+                                    </div>
+                                </div>
+                                <button type="button" 
+                                        class="add-to-cart-btn" 
+                                        onclick="addToCart('{{ item.id }}')"
+                                        style="background: #ffd700; color: #111; border: none; padding: 0.8rem 1.5rem; font-weight: 700; border-radius: 8px; width: 100%; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px; font-size: 1rem; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                                    Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% empty %}
+            <div style="text-align: center; padding: 4rem 0;">
+                <p style="color: #fff; font-size: 1.2rem;">No menu items found.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" style="position: fixed; bottom: 20px; right: 20px; background: #333; color: #fff; padding: 1rem 2rem; border-radius: 8px; display: none; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <span id="toast-message"></span>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let itemQuantities = {};
+
+function updateQuantity(itemId, change) {
+    const currentQuantity = itemQuantities[itemId] || 0;
+    const newQuantity = Math.max(0, currentQuantity + change);
+    itemQuantities[itemId] = newQuantity;
+    document.getElementById(`quantity-${itemId}`).textContent = newQuantity;
+}
+
+function showToast(message, isError = false) {
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toast-message');
+    toast.style.background = isError ? '#ff4444' : '#4CAF50';
+    toastMessage.textContent = message;
+    toast.style.display = 'block';
+    setTimeout(() => {
+        toast.style.display = 'none';
+    }, 3000);
+}
+
+function addToCart(itemId) {
+    const quantity = itemQuantities[itemId] || 1;
+    if (quantity < 1) {
+        showToast('Please select a quantity', true);
+        return;
+    }
+
+    fetch('/orders/add-to-cart/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({ 
+            item_id: itemId, 
+            quantity: quantity 
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('Added to cart successfully!');
+            // Reset quantity after successful add
+            itemQuantities[itemId] = 0;
+            document.getElementById(`quantity-${itemId}`).textContent = '0';
+        } else {
+            showToast(data.error || 'Error adding to cart', true);
+        }
+    })
+    .catch(error => {
+        showToast('Error adding to cart', true);
+        console.error('Error:', error);
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Add hover effects for menu items
+document.addEventListener('DOMContentLoaded', function() {
+    const menuItems = document.querySelectorAll('.add-to-cart-btn');
+    menuItems.forEach(button => {
+        button.addEventListener('mouseover', function() {
+            this.style.background = '#fff';
+            this.style.transform = 'translateY(-2px)';
+            this.style.boxShadow = '0 4px 8px rgba(255,215,0,0.3)';
+        });
+        button.addEventListener('mouseout', function() {
+            this.style.background = '#ffd700';
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+        });
+    });
+});
+</script>
+{% endblock %} 

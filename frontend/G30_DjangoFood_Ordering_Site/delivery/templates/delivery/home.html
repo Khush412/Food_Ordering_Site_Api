@@ -1,0 +1,17 @@
+{% extends 'delivery/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="home-page">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1>Welcome to Ziggy Eats</h1>
+                <p class="description">The fastest growing delivery service. Become a part of Ziggy Eats today!</p>
+                <div class="cta-buttons">
+                    <a href="{% url 'register_rider' %}" class="btn-primary">Join Us</a>
+                    <p class="cta-text">Already a rider? <a href="{% url 'login_rider' %}" class="login-link">Login here</a></p>
+                </div>
+            </div>
+        </section>
+    </div>
+{% endblock %}

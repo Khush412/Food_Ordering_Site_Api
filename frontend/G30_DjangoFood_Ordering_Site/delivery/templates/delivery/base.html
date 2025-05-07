@@ -1,0 +1,60 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ziggy Eats - Delivery Riders</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Ubuntu:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'delivery/styles.css' %}">
+</head>
+<body>
+    <!-- Header and Navbar -->
+    <header>
+        <nav class="navbar">
+            <div class="navbar-logo">
+                <a href="{% url 'home' %}">Ziggy Eats</a>
+            </div>
+            <div class="navbar-links">
+                <ul>
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="{% url 'contact' %}">Contact</a></li>
+                    <li><a href="{% url 'login_rider' %}">Login</a></li>
+                    <li><a href="{% url 'register_rider' %}">Register as a Rider</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content Section -->
+    {% block content %}
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% endblock %}
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-info">
+                <p>&copy; 2025 Ziggy Eats. All rights reserved.</p>
+            </div>
+            <div class="footer-links">
+                <ul>
+                    <li><a href="{% url 'about' %}">About Us</a></li>
+                    <li><a href="{% url 'contact' %}">Contact</a></li>
+                    <li><a href="{% url 'terms' %}">Terms of Service</a></li>
+                    <li><a href="{% url 'privacy' %}">Privacy Policy</a></li>
+                    <!-- Add the new link as a minimal style -->
+                    <li><a href="http://127.0.0.1:8000/" style="font-size: 12px; color: #f5c518; text-decoration: none; padding: 0;">Go to Orders Site</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

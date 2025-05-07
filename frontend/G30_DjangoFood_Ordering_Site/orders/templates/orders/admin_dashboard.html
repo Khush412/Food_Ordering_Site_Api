@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        background-color: #121212;
+        color: #f5f5f5;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .content-wrapper {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 40px 20px;
+    }
+
+    .container {
+        background-color: #1e1e1e;
+        border: 1px solid #2a2a2a;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 14px rgba(255, 255, 0, 0.1);
+        width: 100%;
+        max-width: 800px;
+    }
+
+    h1 {
+        color: #ffcc00;
+        font-weight: 700;
+        margin-bottom: 30px;
+        border-left: 5px solid #ffcc00;
+        padding-left: 15px;
+    }
+
+    p {
+        font-size: 1.1rem;
+        color: #ccc;
+    }
+
+    a.btn {
+        display: inline-block;
+        margin: 12px 10px 0 0;
+        padding: 12px 22px;
+        font-size: 1rem;
+        font-weight: bold;
+        text-decoration: none;
+        border-radius: 8px;
+        transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    a.btn-primary {
+        background-color: #ffcc00;
+        color: #000;
+        border: none;
+    }
+
+    a.btn-primary:hover {
+        background-color: #e6b800;
+        color: #000;
+    }
+
+    a.btn-outline-primary {
+        background-color: transparent;
+        color: #ffcc00;
+        border: 2px solid #ffcc00;
+    }
+
+    a.btn-outline-primary:hover {
+        background-color: #ffcc00;
+        color: #000;
+    }
+
+    a.btn-outline-secondary {
+        background-color: transparent;
+        color: #ccc;
+        border: 2px solid #ccc;
+    }
+
+    a.btn-outline-secondary:hover {
+        background-color: #ccc;
+        color: #000;
+    }
+
+    hr {
+        border: 0;
+        border-top: 2px solid #444;
+        margin: 40px 0;
+    }
+
+    footer {
+        background-color: #1a1a1a;
+        color: #888;
+        text-align: center;
+        padding: 15px;
+        font-size: 0.9rem;
+        margin-top: auto;
+    }
+</style>
+
+<div class="content-wrapper">
+    <div class="container">
+        <h1>Admin Dashboard</h1>
+
+        <p>Total Orders: {{ order_count }}</p>
+        <a href="{% url 'orders:admin_order_list' %}" class="btn btn-primary">View Orders</a>
+
+        <a href="{% url 'orders:admin_menuitem_list' %}" class="btn btn-outline-primary">Manage Menu Items</a>
+
+        <hr>
+
+        <p>Total Contact Messages: {{ message_count }}</p>
+        <a href="{% url 'orders:admin_contact_messages' %}" class="btn btn-outline-secondary">View Contact Messages</a>
+
+        <hr>
+
+        <p>Total Riders: {{ rider_count }}</p>
+        <a href="{% url 'orders:admin_rider_list' %}" class="btn btn-outline-primary">Manage Riders</a>
+
+    </div>
+</div>
+
+{% endblock %}

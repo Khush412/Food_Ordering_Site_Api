@@ -1,0 +1,267 @@
+/* Hero Section */
+
+
+.order-btn {
+   background-color: #ffbb33;
+   padding: 10px 20px;
+   color: white;
+   text-decoration: none;
+   border-radius: 5px;
+   font-size: 1.1rem;
+   display: inline-flex;
+   align-items: center;
+}
+
+.order-btn i {
+   margin-right: 8px;
+}
+
+/* Top Restaurants */
+.restaurants h2 {
+   text-align: center;
+   margin-top: 50px;
+   font-size: 2rem;
+   color: #ffbb33;
+}
+
+.restaurant-list {
+   display: flex;
+   flex-wrap: wrap;
+   justify-content: center;
+   gap: 20px;
+}
+
+.restaurant-card {
+   width: 250px;
+   border: 1px solid #ccc;
+   border-radius: 10px;
+   overflow: hidden;
+   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+   transition: transform 0.3s ease;
+}
+
+.restaurant-card:hover {
+   transform: scale(1.05);
+}
+
+.restaurant-img-wrapper img {
+   width: 100%;
+   height: 200px;
+   object-fit: cover;
+}
+
+.restaurant-info {
+   padding: 15px;
+   text-align: center;
+}
+
+.restaurant-info h3 {
+   font-size: 1.3rem;
+   font-weight: bold;
+}
+
+.cta-buttons {
+   text-align: center;
+   margin-top: 30px;
+}
+
+.view-more-btn {
+   background-color: #ffbb33;
+   padding: 12px 20px;
+   color: white;
+   text-decoration: none;
+   border-radius: 50px;
+   font-size: 1.1rem;
+}
+
+/* Membership Section */
+.membership {
+   text-align: center;
+   margin-top: 50px;
+   background-color: #1f1f1f;
+   color: white;
+   padding: 40px 0;
+}
+
+.membership h2 {
+   font-size: 2.5rem;
+   margin-bottom: 40px;
+   color: #ffbb33;
+}
+
+.membership-table {
+   width: 80%;
+   margin: 0 auto;
+   margin-bottom: 40px;
+   background-color: #333;
+   border-radius: 10px;
+   overflow: hidden;
+}
+
+table {
+   width: 100%;
+   border-collapse: collapse;
+}
+
+th, td {
+   padding: 15px;
+   text-align: center;
+   font-size: 1.1rem;
+   border: 1px solid #444;
+}
+
+th {
+   background-color: #ffbb33;
+   color: black;
+}
+
+tr:nth-child(even) {
+   background-color: #444;
+}
+
+tr:nth-child(odd) {
+   background-color: #333;
+}
+
+.membership-features i {
+   color: green;
+}
+
+.membership-features i.fas.fa-times {
+   color: red;
+}
+
+/* Membership Cards */
+.membership-buttons {
+   display: flex;
+   justify-content: space-around;
+   margin-top: 40px;
+}
+
+.membership-card {
+   background-color: #222;
+   border-radius: 10px;
+   padding: 25px;
+   width: 250px;
+   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+   text-align: center;
+   color: white;
+   transition: transform 0.3s ease;
+}
+
+.membership-card:hover {
+   transform: scale(1.05);
+}
+
+.price {
+   font-size: 1.5rem;
+   margin: 20px 0;
+   font-weight: bold;
+   color: #ffbb33;
+}
+
+.purchase-btn {
+   background-color: #ffbb33;
+   padding: 12px 20px;
+   color: black;
+   text-decoration: none;
+   border-radius: 50px;
+   font-size: 1.1rem;
+   width: 100%;
+   margin-top: 10px;
+   transition: background-color 0.3s ease;
+}
+
+.purchase-btn:hover {
+   background-color: #e69a2b;
+}
+
+.member-btn {
+   background-color: #ffbb33;
+   color: black;
+   cursor: not-allowed;
+   border-radius: 50px;
+   text-decoration: none;
+}
+
+.member-btn:hover {
+   background-color: #e69a2b;
+   cursor: not-allowed;
+}
+/* Membership Cards */
+.membership-buttons {
+   display: flex;
+   justify-content: space-around;
+   margin-top: 40px;
+   flex-wrap: wrap;
+}
+
+.membership-card {
+   background-color: #222;
+   border-radius: 12px;
+   padding: 30px;
+   width: 280px;
+   box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+   text-align: center;
+   color: white;
+   transition: transform 0.3s ease, box-shadow 0.3s ease;
+   margin: 10px;
+}
+
+.membership-card:hover {
+   transform: scale(1.05);
+   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.price {
+   font-size: 1.6rem;
+   margin: 20px 0;
+   font-weight: 700;
+   color: #ffbb33;
+}
+
+.purchase-btn {
+   background-color: #ffbb33;
+   padding: 14px 24px;
+   color: black;
+   text-decoration: none;
+   border-radius: 30px;
+   font-size: 1.2rem;
+   width: 100%;
+   margin-top: 15px;
+   border: none;
+   transition: background-color 0.3s ease, transform 0.2s ease;
+   font-family: 'Poppins', sans-serif;
+   font-weight: 600;
+   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.purchase-btn:hover {
+   background-color: #e69a2b;
+   transform: translateY(-2px);
+}
+
+.purchase-btn:active {
+   transform: translateY(0);
+}
+
+.member-btn {
+   background-color: #ffbb33;
+   color: black;
+   cursor: not-allowed;
+   border-radius: 30px;
+   text-decoration: none;
+   font-family: 'Poppins', sans-serif;
+   font-weight: 600;
+   padding: 14px 24px;
+   width: 100%;
+   margin-top: 15px;
+   border: none;
+   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.member-btn:hover {
+   background-color: #e69a2b;
+   cursor: not-allowed;
+   transform: translateY(-2px);
+}

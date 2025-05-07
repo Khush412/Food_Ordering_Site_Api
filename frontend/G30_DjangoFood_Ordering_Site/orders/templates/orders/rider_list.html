@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="min-height: 100vh; display: flex; flex-direction: column; background-color: #121212; color: #f5f5f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+
+    <div style="flex: 1; display: flex; justify-content: center; align-items: flex-start; padding: 40px 20px;">
+        <div style="background-color: #1e1e1e; border: 1px solid #2a2a2a; padding: 30px; border-radius: 12px; box-shadow: 0 4px 14px rgba(255, 255, 0, 0.1); width: 100%; max-width: 900px;">
+            <h1 style="color: #ffcc00; font-weight: 700; margin-bottom: 25px; border-left: 5px solid #ffcc00; padding-left: 15px;">Rider List</h1>
+
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; background-color: #2a2a2a; border-radius: 10px; overflow: hidden;">
+                    <thead>
+                        <tr style="background-color: #1a1a1a;">
+                            <th style="padding: 12px 16px; color: white;">Name</th>
+                            <th style="padding: 12px 16px; color: white;">Email</th>
+                            <th style="padding: 12px 16px; color: white;">Approved</th>
+                            <th style="padding: 12px 16px; color: white;">On Duty</th>
+                            <th style="padding: 12px 16px; color: white;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rider in riders %}
+                        <tr style="border-bottom: 1px solid #444;">
+                            <td style="padding: 12px 16px;">{{ rider.name }}</td>
+                            <td style="padding: 12px 16px;">{{ rider.email }}</td>
+                            <td style="padding: 12px 16px;">{{ rider.is_approved }}</td>
+                            <td style="padding: 12px 16px;">{{ rider.on_duty }}</td>
+                            <td style="padding: 12px 16px;">
+                                <a href="{% url 'orders:admin_rider_edit' rider.pk %}" style="display:inline-block;padding:8px 16px;margin:4px 0;font-size:0.9rem;font-weight:bold;text-decoration:none;border-radius:6px;background-color:#ffcc00;color:#000;">Edit</a>
+                                <a href="{% url 'orders:admin_rider_approve' rider.pk %}" style="display:inline-block;padding:8px 16px;margin:4px 5px;font-size:0.9rem;font-weight:bold;text-decoration:none;border-radius:6px;border:2px solid #ffcc00;color:#ffcc00;">Approve</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" style="padding: 12px 16px;">No riders found.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    body {
+        background-color: #121212;
+        color: #f5f5f5;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .menu-table-container {
+        max-width: 1100px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: #1e1e1e;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(255, 204, 0, 0.1);
+    }
+
+    h2 {
+        color: #ffcc00;
+        margin-bottom: 20px;
+    }
+
+    .add-btn {
+        background-color: #ffcc00;
+        color: #000;
+        font-weight: bold;
+        padding: 6px 12px;
+        border: none;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+        margin-bottom: 10px;
+        display: inline-block;
+    }
+
+    .add-btn:hover {
+        background-color: #e6b800;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+    thead {
+        background-color: #2c2c2c;
+    }
+
+    th, td {
+        padding: 12px 10px;
+        text-align: left;
+        border: 1px solid #333;
+    }
+
+    tbody tr:nth-child(even) {
+        background-color: #252525;
+    }
+
+    tbody tr:hover {
+        background-color: #2e2e2e;
+    }
+
+    .btn-sm {
+        padding: 4px 10px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-warning {
+        background-color: #ffcc00;
+        color: #000;
+    }
+
+    .btn-warning:hover {
+        background-color: #e6b800;
+    }
+
+    .btn-danger {
+        background-color: #ff4d4d;
+        color: #fff;
+    }
+
+    .btn-danger:hover {
+        background-color: #cc0000;
+    }
+</style>
+
+<div class="menu-table-container">
+    <h2>Menu Items</h2>
+    <a href="{% url 'orders:admin_menuitem_create' %}" class="add-btn">+ Add Menu Item</a>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Veg?</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.name }}</td>
+                <td>{{ item.category }}</td>
+                <td>₹{{ item.price }}</td>
+                <td>{{ item.is_veg|yesno:"Yes,No" }}</td>
+                <td>
+                    <a href="{% url 'orders:admin_menuitem_edit' item.pk %}" class="btn-sm btn-warning">Edit</a>
+                    <a href="{% url 'orders:admin_menuitem_delete' item.pk %}" class="btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" style="text-align:center;">No menu items found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

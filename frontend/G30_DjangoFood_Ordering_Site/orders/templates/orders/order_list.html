@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    body {
+        background-color: #121212;
+        color: #f5f5f5;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .order-list-container {
+        max-width: 1000px;
+        margin: 60px auto;
+        background-color: #1e1e1e;
+        border: 1px solid #2c2c2c;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 0 15px rgba(255, 204, 0, 0.05);
+    }
+
+    h2 {
+        color: #ffcc00;
+        font-weight: bold;
+        margin-bottom: 25px;
+        text-align: center;
+    }
+
+    .btn {
+        padding: 8px 16px;
+        font-size: 0.95rem;
+        font-weight: bold;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        text-decoration: none;
+        margin-right: 10px;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        color: #fff;
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+    }
+
+    .btn-sm {
+        font-size: 0.85rem;
+    }
+
+    .btn-info {
+        background-color: #17a2b8;
+        color: #fff;
+    }
+
+    .btn-info:hover {
+        background-color: #138496;
+    }
+
+    .btn-warning {
+        background-color: #ffc107;
+        color: #000;
+    }
+
+    .btn-warning:hover {
+        background-color: #e0a800;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        color: #fff;
+    }
+
+    .btn-danger:hover {
+        background-color: #c82333;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    th, td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #444;
+    }
+
+    th {
+        background-color: #333;
+        color: #ffcc00;
+        font-weight: bold;
+    }
+
+    td {
+        background-color: #2a2a2a;
+        color: #f5f5f5;
+    }
+
+    td a {
+        padding: 6px 12px;
+        text-decoration: none;
+    }
+</style>
+
+<div class="order-list-container">
+    <h2>All Orders</h2>
+    <a href="{% url 'orders:admin_order_create' %}" class="btn btn-success mb-3">Create New Order</a>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Customer</th>
+                <th>Status</th>
+                <th>Rider</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for order in orders %}
+            <tr>
+                <td>{{ order.id }}</td>
+                <td>{{ order.full_name }}</td>
+                <td>{{ order.status }}</td>
+                <td>{{ order.rider }}</td>
+                <td>
+                    <a href="{% url 'orders:admin_order_detail' order.pk %}" class="btn btn-sm btn-info">View</a>
+                    <a href="{% url 'orders:admin_order_edit' order.pk %}" class="btn btn-sm btn-warning">Edit</a>
+                    <a href="{% url 'orders:admin_order_delete' order.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

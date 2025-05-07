@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order History - Ziggy Eats{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px !important; margin: 2rem auto !important; padding: 0 1rem !important; background: #111 !important; min-height: 100vh !important; font-family: 'Montserrat', sans-serif !important;">
+    <h2 style="color: #ffd700 !important; font-size: 2.5rem !important; margin-bottom: 2rem !important; text-align: center !important; text-transform: uppercase !important; letter-spacing: 2px !important;">Your Order History</h2>
+    
+    {% if orders %}
+        {% for order in orders %}
+        <div style="background: #1e1e1e !important; border-radius: 10px !important; padding: 2rem !important; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important; margin-bottom: 2rem !important; border: 1px solid #ffd700 !important;">
+            <div style="display: flex !important; justify-content: space-between !important; align-items: center !important; margin-bottom: 1.5rem !important; padding-bottom: 1rem !important; border-bottom: 1px solid #333 !important;">
+                <div>
+                    <h3 style="color: #ffd700 !important; margin: 0 !important; font-size: 1.5rem !important;">Order #{{ order.id }}</h3>
+                    <p style="color: #888 !important; font-size: 0.9rem !important; margin-top: 0.5rem !important;">{{ order.created_at|date:"F j, Y, g:i a" }}</p>
+                </div>
+                <span style="padding: 0.25rem 0.75rem !important; border-radius: 15px !important; font-size: 0.9rem !important; 
+                    {% if order.status == 'PENDING' %}
+                        background-color: #ffc107 !important; color: #000 !important;
+                    {% elif order.status == 'CONFIRMED' %}
+                        background-color: #0dcaf0 !important; color: #000 !important;
+                    {% elif order.status == 'PREPARING' %}
+                        background-color: #17a2b8 !important; color: #fff !important;
+                    {% elif order.status == 'OUT_FOR_DELIVERY' %}
+                        background-color: #6610f2 !important; color: #fff !important;
+                    {% elif order.status == 'DELIVERED' %}
+                        background-color: #28a745 !important; color: #fff !important;
+                    {% else %}
+                        background-color: #dc3545 !important; color: #fff !important;
+                    {% endif %}">
+                    {{ order.get_status_display }}
+                </span>
+            </div>
+
+            <div style="margin-bottom: 1.5rem !important;">
+                {% for item in order.items.all %}
+                <div style="display: flex !important; gap: 1rem !important; padding: 1rem !important; background: #2a2a2a !important; border-radius: 8px !important; margin-bottom: 1rem !important;">
+                    <div style="flex: 1 !important;">
+                        <h4 style="color: #fff !important; margin: 0 0 0.5rem 0 !important;">{{ item.product_name }}</h4>
+                        <div style="display: flex !important; justify-content: space-between !important; color: #888 !important;">
+                            <span>₹{{ item.price }}</span>
+                            <span style="background-color: #ffd700 !important; color: #000 !important; padding: 0.25rem 0.75rem !important; border-radius: 15px !important; font-size: 0.9rem !important;">
+                                Quantity: {{ item.quantity }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div style="background: #2a2a2a !important; border-radius: 8px !important; padding: 1.5rem !important; margin-top: 1.5rem !important;">
+                <div style="display: flex !important; justify-content: space-between !important; margin-bottom: 0.5rem !important; color: #888 !important;">
+                    <span>Subtotal</span>
+                    <span>₹{{ order.total_price }}</span>
+                </div>
+                <div style="display: flex !important; justify-content: space-between !important; margin-bottom: 0.5rem !important; color: #888 !important;">
+                    <span>Delivery Fee</span>
+                    <span>₹{{ order.delivery_fee }}</span>
+                </div>
+                <div style="color: #ffd700 !important; font-size: 1.2rem !important; font-weight: 600 !important; margin-top: 1rem !important; padding-top: 1rem !important; border-top: 1px solid #333 !important; display: flex !important; justify-content: space-between !important;">
+                    <span>Total</span>
+                    <span>₹{{ order.total_price }}</span>
+                </div>
+            </div>
+
+            <div style="margin-top: 1.5rem !important; padding-top: 1.5rem !important; border-top: 1px solid #333 !important;">
+                <h3 style="color: #ffd700 !important; margin-bottom: 1rem !important;">Delivery Information</h3>
+                <div style="display: grid !important; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important; gap: 1rem !important;">
+                    <div style="color: #888 !important;">
+                        <strong style="color: #fff !important;">Name:</strong> {{ order.full_name }}
+                    </div>
+                    <div style="color: #888 !important;">
+                        <strong style="color: #fff !important;">Phone:</strong> {{ order.phone }}
+                    </div>
+                    <div style="color: #888 !important;">
+                        <strong style="color: #fff !important;">Address:</strong> {{ order.address }}
+                    </div>
+                    <div style="color: #888 !important;">
+                        <strong style="color: #fff !important;">Payment Method:</strong> {{ order.get_payment_method_display }}
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex !important; gap: 1rem !important; margin-top: 1.5rem !important;">
+                <a href="{% url 'order_detail' order.id %}" style="background-color: #ffd700 !important; color: #000 !important; border: none !important; padding: 0.5rem 1rem !important; border-radius: 5px !important; text-decoration: none !important; transition: background-color 0.3s !important;">
+                    View Details
+                </a>
+                {% if order.status == 'PENDING' %}
+                <button onclick="cancelOrder({{ order.id }})" style="background-color: #dc3545 !important; color: #fff !important; border: none !important; padding: 0.5rem 1rem !important; border-radius: 5px !important; cursor: pointer !important; transition: background-color 0.3s !important;">
+                    Cancel Order
+                </button>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div style="text-align: center !important; padding: 3rem !important; color: #888 !important;">
+            <h4 style="color: #ffd700 !important; margin-bottom: 1rem !important;">No Orders Yet</h4>
+            <p>Start your food journey with us!</p>
+            <a href="{% url 'ziggy_cafe_menu' %}" style="background-color: #ffd700 !important; color: #000 !important; border: none !important; padding: 0.75rem 1.5rem !important; border-radius: 5px !important; text-decoration: none !important; transition: background-color 0.3s !important; display: inline-block !important; margin-top: 1rem !important;">
+                Start Ordering
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" style="position: fixed !important; bottom: 20px !important; right: 20px !important; background: #333 !important; color: #fff !important; padding: 1rem 2rem !important; border-radius: 8px !important; display: none !important; z-index: 1000 !important; box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;">
+    <span id="toast-message"></span>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function showToast(message, isError = false) {
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toast-message');
+    toast.style.background = isError ? '#ff4444' : '#4CAF50';
+    toastMessage.textContent = message;
+    toast.style.display = 'block';
+    setTimeout(() => {
+        toast.style.display = 'none';
+    }, 3000);
+}
+
+function cancelOrder(orderId) {
+    if (confirm('Are you sure you want to cancel this order?')) {
+        fetch(`/orders/cancel/${orderId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast('Order cancelled successfully');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                showToast(data.error || 'Error cancelling order', true);
+            }
+        })
+        .catch(error => {
+            showToast('Error cancelling order', true);
+            console.error('Error:', error);
+        });
+    }
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %} 

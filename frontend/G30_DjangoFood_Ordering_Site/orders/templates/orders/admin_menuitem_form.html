@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    html, body {
+        background-color: #121212;
+        color: #f5f5f5;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    .form-container {
+        max-width: 700px;
+        margin: 60px auto;
+        background-color: #1e1e1e;
+        border: 1px solid #2a2a2a;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 4px 14px rgba(255, 255, 0, 0.1);
+    }
+
+    h2 {
+        color: #ffcc00;
+        font-weight: bold;
+        margin-bottom: 30px;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    form p {
+        margin: 0;
+    }
+
+    form label {
+        color: #ccc;
+        font-weight: 500;
+        display: block;
+        margin-bottom: 6px;
+    }
+
+    form input, form select, form textarea {
+        width: 100%;
+        padding: 10px 14px;
+        border-radius: 6px;
+        border: 1px solid #444;
+        background-color: #2b2b2b;
+        color: #f5f5f5;
+        font-size: 1rem;
+    }
+
+    form input:focus, form select:focus, form textarea:focus {
+        outline: none;
+        border-color: #ffcc00;
+        box-shadow: 0 0 5px rgba(255, 204, 0, 0.5);
+    }
+
+    .btn {
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: bold;
+        text-decoration: none;
+        border: none;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .btn-success {
+        background-color: #ffcc00;
+        color: #000;
+    }
+
+    .btn-success:hover {
+        background-color: #e6b800;
+    }
+
+    .btn-secondary {
+        background-color: #444;
+        color: #fff;
+        margin-left: 10px;
+    }
+
+    .btn-secondary:hover {
+        background-color: #666;
+    }
+
+    .button-group {
+        display: flex;
+        justify-content: flex-start;
+        margin-top: 10px;
+    }
+</style>
+
+<div class="form-container">
+    <h2>{{ form.instance.pk|yesno:"Edit Menu Item,Create Menu Item" }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="button-group">
+            <button type="submit" class="btn btn-success">Save</button>
+            <a href="{% url 'orders:admin_menuitem_list' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

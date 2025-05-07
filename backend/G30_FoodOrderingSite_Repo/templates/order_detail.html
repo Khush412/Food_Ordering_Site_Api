@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}Order Details - Ziggy Eats{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="card">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="card-title mb-1">Order #{{ order.id }}</h2>
+                    <p class="text-muted mb-0">{{ order.created_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+                </div>
+                <span class="badge {% if order.status == 'pending' %}bg-warning
+                                 {% elif order.status == 'confirmed' %}bg-info
+                                 {% elif order.status == 'preparing' %}bg-primary
+                                 {% elif order.status == 'out_for_delivery' %}bg-purple
+                                 {% elif order.status == 'delivered' %}bg-success
+                                 {% else %}bg-danger{% endif %}">
+                    {{ status_labels[order.status] }}
+        </span>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Order Tracking</h5>
+                    {# Timeline removed due to missing methods in Flask model #}
+                </div>
+        </div>
+        
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title mb-4">Order Items</h5>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Item</th>
+                                            <th class="text-center">Quantity</th>
+                                            <th class="text-end">Price</th>
+                                            <th class="text-end">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+            {% for item in order_items %}
+                                        <tr>
+                                            <td>
+                <div class="d-flex align-items-center">
+                                                    <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}" 
+                                                         class="rounded me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                                    <div>
+                                                        <h6 class="mb-0">{{ item.product.name }}</h6>
+                                                        <small class="text-muted">{{ item.product.description }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">{{ item.quantity }}</td>
+                                            <td class="text-end">₹{{ "%.2f"|format(item.price) }}</td>
+                                            <td class="text-end">₹{{ "%.2f"|format(item.price * item.quantity) }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title mb-4">Delivery Information</h5>
+                            <p class="mb-1"><strong>Name:</strong> {{ order.full_name }}</p>
+                            <p class="mb-1"><strong>Phone:</strong> {{ order.phone }}</p>
+                            <p class="mb-1"><strong>Address:</strong> {{ order.address }}</p>
+                            <p class="mb-0"><strong>Payment:</strong> {{ payment_method_labels[order.payment_method] }}</p>
+            </div>
+        </div>
+        
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title mb-4">Order Summary</h5>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Subtotal</span>
+                <span>₹{{ "%.2f"|format(order.get_subtotal()) }}</span>
+            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Delivery Fee</span>
+                <span>₹{{ "%.2f"|format(order.delivery_fee) }}</span>
+            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between">
+                                <strong>Total</strong>
+                                <strong>₹{{ "%.2f"|format(order.get_total_price()) }}</strong>
+            </div>
+        </div>
+            </div>
+            </div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <a href="{{ url_for('order_history') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Orders
+                </a>
+                {% if order.status == 'pending' %}
+                <button class="btn btn-outline-danger" onclick="cancelOrder('{{ order.id }}')">
+                    <i class="fas fa-times me-1"></i> Cancel Order
+                </button>
+                    {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.timeline {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.timeline-item {
+    position: relative;
+    padding-bottom: 2rem;
+}
+
+.timeline-item:last-child {
+    padding-bottom: 0;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -2rem;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background: #dee2e6;
+    border: 2px solid #fff;
+}
+
+.timeline-item.active .timeline-marker {
+    background: #0d6efd;
+}
+
+.timeline-item.completed .timeline-marker {
+    background: #198754;
+}
+
+.timeline-item:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: -1.5rem;
+    top: 1rem;
+    bottom: -1rem;
+    width: 2px;
+    background: #dee2e6;
+}
+
+.timeline-item.completed::before {
+    background: #198754;
+}
+</style>
+
+<script>
+function cancelOrder(orderId) {
+    if (!confirm('Are you sure you want to cancel this order?')) {
+        return;
+    }
+    
+    fetch(`/cancel_order/${orderId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+            window.location.reload();
+            } else {
+                alert(data.error || 'Error cancelling order');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error cancelling order');
+        });
+}
+</script>
+{% endblock %} 

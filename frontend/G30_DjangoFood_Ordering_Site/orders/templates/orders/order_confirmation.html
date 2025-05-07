@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order Confirmation - Ziggy Eats{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 3rem auto; padding: 0 1rem;">
+    <div style="background: #1e1e1e; border-radius: 15px; padding: 2.5rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); border: 1px solid #333;">
+        <div style="text-align: center;">
+            <div style="margin-bottom: 2rem;">
+                <i class="fas fa-check-circle" style="font-size: 5rem; color: #ffd700;"></i>
+            </div>
+            <h2 style="color: #ffd700; font-size: 2.5rem; font-weight: 700; margin-bottom: 1.5rem;">Order Confirmed!</h2>
+            <h4 style="color: #fff; font-size: 1.5rem; margin-bottom: 1rem;">Thank you for your order</h4>
+            <p style="color: #888; font-size: 1.1rem; margin-bottom: 2rem;">Your order has been placed successfully.</p>
+        </div>
+
+        <div style="background: #2a2a2a; border-radius: 12px; padding: 2rem; margin-bottom: 2rem; border: 1px solid #444;">
+            <h5 style="color: #ffd700; font-size: 1.4rem; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid #ffd700;">Order Details</h5>
+            
+            <div style="display: grid; gap: 1rem;">
+                <div style="display: flex; justify-content: space-between; color: #fff;">
+                    <span style="font-weight: 600;">Order ID:</span>
+                    <span>#{{ order.id }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; color: #fff;">
+                    <span style="font-weight: 600;">Full Name:</span>
+                    <span>{{ order.full_name }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; color: #fff;">
+                    <span style="font-weight: 600;">Email:</span>
+                    <span>{{ order.email }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; color: #fff;">
+                    <span style="font-weight: 600;">Phone:</span>
+                    <span>{{ order.phone }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; color: #fff;">
+                    <span style="font-weight: 600;">Delivery Address:</span>
+                    <span style="text-align: right;">{{ order.address }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; color: #fff;">
+                    <span style="font-weight: 600;">Payment Method:</span>
+                    <span>{{ order.get_payment_method_display }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div style="background: #2a2a2a; border-radius: 12px; padding: 2rem; margin-bottom: 2rem; border: 1px solid #444;">
+            <h5 style="color: #ffd700; font-size: 1.4rem; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid #ffd700;">Order Summary</h5>
+            
+            <div style="display: grid; gap: 1rem;">
+                <div style="display: flex; justify-content: space-between; color: #fff;">
+                    <span>Subtotal:</span>
+                    <span>₹{{ order.get_subtotal|floatformat:2 }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; color: #fff;">
+                    <span>Delivery Fee:</span>
+                    <span>₹{{ order.delivery_fee|floatformat:2 }}</span>
+                </div>
+                <hr style="border-color: #444; margin: 1rem 0;">
+                <div style="display: flex; justify-content: space-between; color: #ffd700; font-size: 1.2rem; font-weight: 700;">
+                    <span>Total Amount:</span>
+                    <span>₹{{ order.total_price|floatformat:2 }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; justify-content: center;">
+            <a href="{% url 'menu' %}" 
+               style="background-color: #ffd700; color: #000; text-decoration: none; padding: 1rem 2rem; border-radius: 10px; font-weight: 700; font-size: 1.1rem; transition: all 0.3s ease;">
+                Continue Shopping
+            </a>
+            <a href="{% url 'order_detail' order.id %}" 
+               style="background-color: transparent; color: #ffd700; text-decoration: none; padding: 1rem 2rem; border-radius: 10px; font-weight: 700; font-size: 1.1rem; border: 2px solid #ffd700; transition: all 0.3s ease;">
+                View Order Details
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add hover effects to buttons
+    const buttons = document.querySelectorAll('a');
+    buttons.forEach(button => {
+        button.addEventListener('mouseover', function() {
+            if (this.style.backgroundColor === 'transparent') {
+                this.style.backgroundColor = '#ffd700';
+                this.style.color = '#000';
+            } else {
+                this.style.backgroundColor = '#e6b800';
+            }
+        });
+        
+        button.addEventListener('mouseout', function() {
+            if (this.style.backgroundColor === '#e6b800') {
+                this.style.backgroundColor = '#ffd700';
+            } else if (this.style.backgroundColor === '#ffd700') {
+                this.style.backgroundColor = 'transparent';
+                this.style.color = '#ffd700';
+            }
+        });
+    });
+});
+</script>
+{% endblock %} 

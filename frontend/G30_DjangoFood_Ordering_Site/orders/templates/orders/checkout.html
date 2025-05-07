@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Checkout - Ziggy Eats{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 2rem auto; padding: 0 1rem; min-height: 100vh;">
+    <div class="row" style="margin: 0;">
+        <!-- Left Column - Delivery Information -->
+        <div class="col-md-8" style="padding: 0 1rem;">
+            <div style="background: #1e1e1e; border-radius: 15px; padding: 2rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); margin-bottom: 2rem; border: 1px solid #333;">
+                <h4 style="color: #ffd700; font-size: 1.8rem; font-weight: 700; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid #ffd700;">Delivery Information</h4>
+                <form method="post" action="{% url 'checkout' %}" style="margin-top: 1.5rem;">
+                    {% csrf_token %}
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <label for="full_name" style="color: #fff; font-size: 1rem; margin-bottom: 0.5rem; display: block;">Full Name</label>
+                        <input type="text" class="form-control" id="full_name" name="full_name" 
+                               value="{{ user.username }}" required
+                               style="background: #2a2a2a; border: 1px solid #444; color: #fff; padding: 0.75rem; border-radius: 8px; width: 100%; transition: all 0.3s ease;">
+                    </div>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <label for="email" style="color: #fff; font-size: 1rem; margin-bottom: 0.5rem; display: block;">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" 
+                               value="{{ user.email }}" required
+                               style="background: #2a2a2a; border: 1px solid #444; color: #fff; padding: 0.75rem; border-radius: 8px; width: 100%; transition: all 0.3s ease;">
+                    </div>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <label for="phone" style="color: #fff; font-size: 1rem; margin-bottom: 0.5rem; display: block;">Phone Number</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" required
+                               style="background: #2a2a2a; border: 1px solid #444; color: #fff; padding: 0.75rem; border-radius: 8px; width: 100%; transition: all 0.3s ease;">
+                    </div>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <label for="address" style="color: #fff; font-size: 1rem; margin-bottom: 0.5rem; display: block;">Delivery Address</label>
+                        <textarea class="form-control" id="address" name="address" rows="3" required
+                                  style="background: #2a2a2a; border: 1px solid #444; color: #fff; padding: 0.75rem; border-radius: 8px; width: 100%; resize: vertical; transition: all 0.3s ease;"></textarea>
+                    </div>
+                    
+                    <div style="margin-bottom: 2rem;">
+                        <label for="payment_method" style="color: #fff; font-size: 1rem; margin-bottom: 0.5rem; display: block;">Payment Method</label>
+                        <select class="form-select" id="payment_method" name="payment_method" required
+                                style="background: #2a2a2a; border: 1px solid #444; color: #fff; padding: 0.75rem; border-radius: 8px; width: 100%; transition: all 0.3s ease;">
+                            <option value="">Select Payment Method</option>
+                            {% for method_code, method_name in payment_methods %}
+                            <option value="{{ method_code }}">{{ method_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 2rem;">
+                        <h5 style="color: #ffd700; font-size: 1.4rem; margin-bottom: 1.5rem;">Order Items</h5>
+                        {% for item in cart_items %}
+                        <div style="background: #2a2a2a; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; border: 1px solid #444;">
+                            <div style="display: flex; align-items: center; gap: 1.5rem;">
+                                <div style="width: 100px; height: 100px; border-radius: 10px; overflow: hidden; flex-shrink: 0;">
+                                    <img src="{{ item.menu_item.image_url }}" alt="{{ item.menu_item.name }}" 
+                                         style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <div style="flex: 1;">
+                                    <h6 style="color: #fff; font-size: 1.1rem; margin: 0 0 0.5rem 0;">{{ item.menu_item.name }}</h6>
+                                    <div style="display: flex; align-items: center; gap: 1rem;">
+                                        <span style="background-color: #ffd700; color: #000; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.9rem; font-weight: 600;">
+                                            {{ item.quantity }} x
+                                        </span>
+                                        <span style="color: #fff; font-size: 1rem;">₹{{ item.price|floatformat:2 }}</span>
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <span style="color: #ffd700; font-size: 1.1rem; font-weight: 600;">
+                                        ₹{{ item.price|multiply:item.quantity|floatformat:2 }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div>
+                        <button type="submit" 
+                                style="background-color: #ffd700; color: #000; border: none; padding: 1rem 2rem; border-radius: 10px; font-weight: 700; font-size: 1.1rem; width: 100%; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s ease; cursor: pointer;">
+                            Place Order
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Right Column - Order Summary -->
+        <div class="col-md-4" style="padding: 0 1rem;">
+            <div style="background: #1e1e1e; border-radius: 15px; padding: 2rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); position: sticky; top: 2rem; border: 1px solid #333;">
+                <h5 style="color: #ffd700; font-size: 1.6rem; font-weight: 700; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid #ffd700;">Order Summary</h5>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; color: #fff; font-size: 1.1rem;">
+                        <span>Subtotal</span>
+                        <span>₹{{ subtotal|floatformat:2 }}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; color: #fff; font-size: 1.1rem;">
+                        <span>Delivery Fee</span>
+                        <span>₹{{ delivery_fee|floatformat:2 }}</span>
+                </div>
+                    <hr style="border-color: #444; margin: 1.5rem 0;">
+                    <div style="display: flex; justify-content: space-between; color: #ffd700; font-size: 1.3rem; font-weight: 700;">
+                        <span>Total</span>
+                        <strong>₹{{ total_price|floatformat:2 }}</strong>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const inputs = form.querySelectorAll('input, textarea, select');
+    
+    // Add focus effects
+    inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.style.borderColor = '#ffd700';
+            this.style.boxShadow = '0 0 0 2px rgba(255, 215, 0, 0.2)';
+        });
+        
+        input.addEventListener('blur', function() {
+            this.style.borderColor = '#444';
+            this.style.boxShadow = 'none';
+        });
+    });
+    
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        // Validate form
+        const fullName = document.getElementById('full_name').value;
+        const email = document.getElementById('email').value;
+        const phone = document.getElementById('phone').value;
+        const address = document.getElementById('address').value;
+        const paymentMethod = document.getElementById('payment_method').value;
+        
+        if (!fullName || !email || !phone || !address || !paymentMethod) {
+            alert('Please fill in all required fields');
+            return;
+        }
+        
+        // Validate phone number
+        const phoneRegex = /^[0-9]{10}$/;
+        if (!phoneRegex.test(phone)) {
+            alert('Please enter a valid 10-digit phone number');
+            return;
+        }
+        
+        // Validate email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            alert('Please enter a valid email address');
+            return;
+        }
+        
+        // If all validations pass, submit the form
+        form.submit();
+    });
+});
+</script>
+{% endblock %}
