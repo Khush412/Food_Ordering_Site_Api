@@ -11,7 +11,7 @@
         <div class="col-md-8" style="padding: 0 1rem;">
             <div style="background: #1e1e1e; border-radius: 15px; padding: 2rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); margin-bottom: 2rem; border: 1px solid #333;">
                 <h4 style="color: #ffd700; font-size: 1.8rem; font-weight: 700; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid #ffd700;">Delivery Information</h4>
-                <form method="post" action="{% url 'checkout' %}" style="margin-top: 1.5rem;">
+                <form method="post" action="{% url 'order_success' %}" style="margin-top: 1.5rem;">
                     {% csrf_token %}
                     
                     <div style="margin-bottom: 1.5rem;">

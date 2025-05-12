@@ -280,47 +280,10 @@ def checkout(request):
                 # Update Django session with latest API session
                 request.session['api_session'] = api_service.session.cookies.get_dict()
                 
-                # Create local order record
-                try:
-                    order = Order.objects.create(
-                        user=request.user,
-                        full_name=full_name,
-                        email=email,
-                        phone=phone,
-                        address=address,
-                        payment_method=payment_method,
-                        total_price=total_price,
-                        delivery_fee=delivery_fee
-                    )
-                    
-                    # Create order items
-                    for item in cart_items:
-                        menu_item = item.get('menu_item', {})
-                        if not menu_item:
-                            print(f"Warning: No menu_item found for cart item: {item}")  # Debug log
-                            continue
-                            
-                        try:
-                            OrderItem.objects.create(
-                                order=order,
-                                product_id=menu_item.get('id', 0),
-                                product_name=menu_item.get('name', 'Unknown Item'),
-                                quantity=item.get('quantity', 1),
-                                price=Decimal(str(item.get('price', 0)))
-                            )
-                            print(f"Created order item: {menu_item.get('name')}")  # Debug log
-                        except Exception as e:
-                            print(f"Error creating order item: {str(e)}")  # Debug log
-                            continue
-                    
-                    messages.success(request, 'Order placed successfully!')
-                    return render(request, 'orders/order_confirmation.html', {'order': order})
-                    
-                except Exception as e:
-                    print("Local Order Creation Error:", str(e))  # Debug log
-                    messages.error(request, f'Error creating local order record: {str(e)}')
-                    return redirect('checkout')
-                    
+                # Show confirmation page using Flask API order response
+                messages.success(request, 'Order placed successfully!')
+                return render(request, 'orders/order_confirmation.html', {'order': order_response.get('order', {})})
+                
             except Exception as e:
                 print("Order Creation Error:", str(e))  # Debug log
                 messages.error(request, f'Error placing order: {str(e)}')
@@ -349,29 +312,19 @@ def checkout(request):
 
 @login_required
 def order_history(request):
-    try:
-        # Get orders from Django database
-        orders = Order.objects.filter(user=request.user).order_by('-created_at').prefetch_related('items')
-        print("Orders found:", orders.count())  # Debug log
-        
-        # Debug log for each order and its items
-        for order in orders:
-            print(f"Order #{order.id}:")  # Debug log
-            print(f"  Status: {order.status}")  # Debug log
-            print(f"  Items: {order.items.count()}")  # Debug log
-            for item in order.items.all():
-                print(f"    - {item.product_name} (x{item.quantity}) - ₹{item.price}")  # Debug log
-        
-        context = {
-            'orders': orders,
-            'status_labels': dict(Order.STATUS_CHOICES),
-            'payment_method_labels': dict(Order.PAYMENT_METHOD_CHOICES)
-        }
-        return render(request, 'orders/order_history.html', context)
-    except Exception as e:
-        print("Error in order_history view:", str(e))  # Debug log
-        messages.error(request, f"Error loading order history: {str(e)}")
-        return redirect('home')
+    # Restore API session if it exists
+    api_session = request.session.get('api_session', {})
+    if api_session:
+        api_service.session.cookies.update(api_session)
+
+    # Get orders from Flask API
+    response = api_service.get_orders(request)
+    if 'error' in response:
+        messages.error(request, response['error'])
+        return render(request, 'orders/order_history.html', {'orders': []})
+
+    orders = response.get('orders', [])
+    return render(request, 'orders/order_history.html', {'orders': orders})
 
 @login_required
 def order_detail(request, order_id):
@@ -385,25 +338,41 @@ def order_detail(request, order_id):
 @require_POST
 def cancel_order(request, order_id):
     try:
+        # Get the order and verify ownership
         order = get_object_or_404(Order, id=order_id, user=request.user)
         
-        if order.status != 'PENDING':
+        # Debug logging
+        print(f"Attempting to cancel order #{order.id} for user {request.user.username}")
+        print(f"Current status: {order.status}")
+        
+        # Check if order can be cancelled
+        if order.status != 'pending':
+            print(f"Cannot cancel order #{order.id}: status is {order.status}")
             return JsonResponse({
                 'error': 'Only pending orders can be cancelled'
             }, status=400)
-            
-        order.status = 'CANCELLED'
+        
+        # Update order status
+        order.status = 'cancelled'
         order.save()
+        
+        print(f"Successfully cancelled order #{order.id}")
         
         return JsonResponse({
             'success': True,
             'message': 'Order cancelled successfully'
         })
         
+    except Order.DoesNotExist:
+        print(f"Order #{order_id} not found")
+        return JsonResponse({
+            'error': 'Order not found'
+        }, status=404)
     except Exception as e:
+        print(f"Error cancelling order #{order_id}: {str(e)}")
         return JsonResponse({
             'error': str(e)
-        }, status=400)
+        }, status=500)
 
 @login_required
 def place_order(request):

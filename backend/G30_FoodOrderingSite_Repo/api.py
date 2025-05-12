@@ -314,6 +314,7 @@ def get_orders():
                 'items': [{
                     'id': item.id,
                     'product_id': item.product_id,
+                    'product_name': MenuItem.query.get(item.product_id).name if MenuItem.query.get(item.product_id) else f'Product #{item.product_id}',
                     'quantity': item.quantity,
                     'price': float(item.price)
                 } for item in order.items]
